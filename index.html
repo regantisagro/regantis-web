@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Regantis Procurement</title>
+<style>
+:root{--navy:#17365D;--blue:#2F75B5;--light:#F4F7FA;--green:#2E7D32;--red:#B3261E;--amber:#9A6700;--border:#D9E1E8;--text:#1F2937}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--light);color:var(--text)}
+header{background:var(--navy);color:white;padding:16px 24px;display:flex;align-items:center;justify-content:space-between} header h1{font-size:20px;margin:0} header small{opacity:.8}
+nav{background:white;border-bottom:1px solid var(--border);padding:0 18px;display:flex;gap:4px;overflow:auto}.tab{border:0;background:transparent;padding:14px 16px;font-weight:600;cursor:pointer;color:#4B5563;border-bottom:3px solid transparent}.tab.active{color:var(--navy);border-bottom-color:var(--blue)}
+main{max-width:1480px;margin:auto;padding:22px}.view{display:none}.view.active{display:block}.grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:0 1px 2px rgba(0,0,0,.03)}.kpi{font-size:28px;font-weight:700;color:var(--navy)}.muted{color:#6B7280;font-size:13px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.btn{border:1px solid var(--border);background:white;border-radius:8px;padding:9px 12px;font-weight:600;cursor:pointer}.btn:hover{filter:brightness(.98)}.btn.primary{background:var(--navy);color:white;border-color:var(--navy)}.btn.blue{background:var(--blue);color:white;border-color:var(--blue)}.btn.danger{color:var(--red)}.btn.small{padding:5px 8px;font-size:12px}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 10px;font:inherit;background:white}textarea{min-height:110px;resize:vertical}label{display:block;font-size:12px;font-weight:700;color:#4B5563;margin-bottom:5px}.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.form-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+table{width:100%;border-collapse:collapse;font-size:13px}th{background:#EEF3F8;text-align:left;padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}td{padding:10px;border-bottom:1px solid #EEF1F4;vertical-align:top}.table-wrap{overflow:auto}.badge{display:inline-block;padding:4px 7px;border-radius:999px;font-size:11px;font-weight:700;background:#E8F1FB;color:#245B8A}.badge.green{background:#E8F5E9;color:#256029}.badge.gray{background:#EEF0F2;color:#5B6470}.badge.amber{background:#FFF4D6;color:#7A5300}.price-best{font-weight:800;color:var(--green)}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:12px}.section-title h2{margin:0;font-size:20px}.dropzone{border:2px dashed #AFC2D4;border-radius:12px;padding:24px;text-align:center;background:#FBFDFF}.notice{background:#FFF8E1;border:1px solid #F2D27A;padding:12px;border-radius:8px;font-size:13px}.notice.info{background:#EEF6FF;border-color:#B9D5F2}.right{text-align:right}.total{font-size:22px;font-weight:800;color:var(--navy)}
+.preview{min-height:300px;border:1px solid var(--border);border-radius:10px;background:#FAFBFC;display:flex;align-items:center;justify-content:center;overflow:hidden}.preview img,.preview iframe{width:100%;height:420px;object-fit:contain;border:0}.staged input,.staged select{padding:6px 7px;font-size:12px;min-width:120px}.staged .desc{min-width:260px}.subtle{font-size:11px;color:#6B7280}.pill-row{display:flex;gap:6px;flex-wrap:wrap}.empty{padding:22px;text-align:center;color:#6B7280}.compare-row{border-left:4px solid #D9E1E8;padding-left:10px}.best-card{border:1px solid #B7D9BA;background:#F7FCF7;border-radius:10px;padding:12px}.metric{font-size:12px;color:#6B7280}.metric b{display:block;font-size:17px;color:#111827;margin-top:2px}
+dialog{border:0;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);width:min(900px,94vw);padding:0}dialog::backdrop{background:rgba(0,0,0,.35)}.modal-head{padding:16px 18px;background:var(--navy);color:white;display:flex;justify-content:space-between;align-items:center}.modal-body{padding:18px}.x{background:transparent;border:0;color:white;font-size:22px;cursor:pointer}
+@media(max-width:900px){.grid-4,.grid-3,.grid-2,.form-grid,.form-grid.two{grid-template-columns:1fr}main{padding:12px}.hide-mobile{display:none}}
+@media print{header,nav,.no-print{display:none!important}body{background:white}main{padding:0}.view{display:none!important}#offer{display:block!important}.card{border:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<header><div><h1>Regantis Procurement</h1><small>Compras, comparación y preparación de ofertas</small></div><div class="badge">V0.2</div></header>
+<nav>
+<button class="tab active" data-view="dashboard">Inicio</button>
+<button class="tab" data-view="importer">Importar cotización</button>
+<button class="tab" data-view="catalog">Catálogo Regantis</button>
+<button class="tab" data-view="quotes">Precios</button>
+<button class="tab" data-view="project">Proyecto</button>
+<button class="tab" data-view="offer">Oferta</button>
+</nav>
+<main>
+<section id="dashboard" class="view active">
+  <div class="grid grid-4">
+    <div class="card"><div class="muted">Productos Regantis</div><div id="kpiProducts" class="kpi">0</div></div>
+    <div class="card"><div class="muted">Proveedores</div><div id="kpiSuppliers" class="kpi">0</div></div>
+    <div class="card"><div class="muted">Precios registrados</div><div id="kpiPrices" class="kpi">0</div></div>
+    <div class="card"><div class="muted">Productos del proyecto</div><div id="kpiProject" class="kpi">0</div></div>
+  </div>
+  <div class="grid grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="section-title"><h2>Uso diario</h2></div>
+      <ol>
+        <li>Subes foto/PDF o pegas los renglones de la cotización.</li>
+        <li>Revisas la extracción y asocias cada renglón al nombre Regantis.</li>
+        <li>Guardas todos los precios de una sola vez.</li>
+        <li>En Proyecto eliges productos y ves el mejor proveedor + alternativas.</li>
+        <li>Puedes aceptar el más barato o elegir otro proveedor y generar la oferta.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>Respaldo de tus datos</h2></div>
+      <p class="muted">La V0.2 sigue siendo local: los datos se guardan en este navegador. Puedes exportar un respaldo JSON e importarlo en otra computadora.</p>
+      <div class="toolbar">
+        <button class="btn" onclick="exportBackup()">Exportar respaldo</button>
+        <label class="btn" style="display:inline-block">Importar respaldo<input id="backupFile" type="file" accept="application/json" hidden onchange="importBackup(event)"></label>
+      </div>
+      <div class="notice info"><b>Siguiente salto:</b> conectar la lectura automática de imágenes/PDF a IA para llenar la tabla de revisión sin copiar texto manualmente.</div>
+    </div>
+  </div>
+</section>
+
+<section id="importer" class="view">
+  <div class="section-title"><h2>Importar cotización</h2><span class="badge amber">Paso 1: revisar antes de guardar</span></div>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="dropzone">
+        <b>Adjunta foto o PDF</b><br><span class="muted">El archivo queda como referencia visual durante la carga.</span><br><br>
+        <input id="importFile" type="file" accept="image/*,.pdf,.txt,.csv" onchange="previewImportFile(event)" style="max-width:420px">
+      </div>
+      <div id="filePreview" class="preview" style="margin-top:14px"><span class="muted">Sin archivo seleccionado</span></div>
+    </div>
+    <div class="card">
+      <div class="form-grid two">
+        <div><label>Proveedor</label><input id="iSupplier" placeholder="Ej. Rain Bird / Aytok / proveedor China"></div>
+        <div><label>N° cotización</label><input id="iQuote" placeholder="Oferta 2026-0817"></div>
+        <div><label>Fecha</label><input id="iDate" type="date"></div>
+        <div><label>Moneda</label><select id="iCurrency"><option>USD</option><option>EUR</option></select></div>
+      </div>
+      <div style="margin-top:14px"><label>Pega aquí renglones o texto extraído</label><textarea id="rawQuoteText" placeholder="Ejemplos aceptados:\nHDPE PIPE 110MM PN10 | 2000 | 8200\nBALL VALVE PVC 63MM;25;445\nTambién puedes pegar texto con tabulaciones desde Excel."></textarea></div>
+      <div class="toolbar" style="margin-top:12px"><button class="btn primary" onclick="parseRawText()">Detectar renglones</button><button class="btn" onclick="addStageRow()">+ Renglón manual</button><button class="btn danger" onclick="clearStage()">Limpiar</button></div>
+      <div class="notice">La V0.2 usa un parser rápido para texto/tablas. La lectura directa automática de la foto/PDF será el siguiente conector; aquí ya queda lista toda la pantalla de validación y guardado masivo.</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="section-title"><h2>Renglones detectados</h2><button class="btn blue" onclick="saveStageRows()">Guardar precios validados</button></div>
+    <div class="table-wrap"><table class="staged"><thead><tr><th>Descripción proveedor</th><th>Cantidad</th><th>Total línea</th><th>Precio unit.</th><th>Producto Regantis</th><th>Acción</th></tr></thead><tbody id="stageBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="catalog" class="view">
+  <div class="section-title"><h2>Catálogo Regantis</h2><button class="btn primary" onclick="openProductForm()">+ Nuevo producto</button></div>
+  <div id="productForm" class="card" style="display:none;margin-bottom:16px">
+    <div class="form-grid">
+      <div><label>Nombre Regantis</label><input id="pName" placeholder="Ej. Válvula bola PVC 2 pulgadas"></div>
+      <div><label>Categoría</label><input id="pCategory" placeholder="Válvulas"></div>
+      <div><label>Unidad base</label><select id="pUnit"><option>ud</option><option>m</option><option>rollo</option><option>kg</option><option>set</option></select></div>
+      <div><label>Especificación clave</label><input id="pSpec" placeholder='2" / PVC'></div>
+    </div>
+    <div class="toolbar" style="margin-top:12px"><button class="btn blue" onclick="saveProduct()">Guardar</button><button class="btn" onclick="closeProductForm()">Cancelar</button></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>Producto Regantis</th><th>Categoría</th><th>Especificación</th><th>Unidad</th><th>Alias / nombres encontrados</th><th>Precios</th><th></th></tr></thead><tbody id="catalogBody"></tbody></table></div></div>
+</section>
+
+<section id="quotes" class="view">
+  <div class="section-title"><h2>Histórico de precios</h2><button class="btn" onclick="showView('importer')">+ Importar cotización</button></div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Proveedor</th><th>Descripción original</th><th>Producto Regantis</th><th>Cant.</th><th>Precio unit.</th><th>Moneda</th><th>Cotización</th><th></th></tr></thead><tbody id="pricesBody"></tbody></table></div></div>
+</section>
+
+<section id="project" class="view">
+  <div class="section-title"><h2>Selector de productos del proyecto</h2><button class="btn" onclick="clearProject()">Vaciar proyecto</button></div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="form-grid two"><div><label>Proyecto</label><input id="projectName" value="Nuevo proyecto Regantis"></div><div><label>Cliente</label><input id="projectClient" placeholder="Cliente"></div></div>
+    <div class="form-grid" style="margin-top:12px">
+      <div><label>Producto</label><select id="projectProduct"></select></div>
+      <div><label>Cantidad</label><input id="projectQty" type="number" step="any" value="1"></div>
+      <div><label>Margen bruto</label><input id="projectMargin" type="number" step="0.01" value="35"></div>
+      <div style="align-self:end"><button class="btn primary" onclick="addProjectItem()">Agregar al proyecto</button></div>
+    </div>
+  </div>
+  <div class="card"><div class="table-wrap"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Proveedor elegido</th><th>Costo unit.</th><th>Alternativas</th><th>Costo total</th><th>Margen</th><th>Precio venta unit.</th><th>Total venta</th><th></th></tr></thead><tbody id="projectBody"></tbody></table></div></div>
+</section>
+
+<section id="offer" class="view">
+  <div class="section-title"><h2>Oferta</h2><div class="toolbar no-print"><button class="btn" onclick="exportOfferCSV()">Exportar CSV</button><button class="btn primary" onclick="window.print()">Imprimir / PDF</button></div></div>
+  <div class="card">
+    <div class="grid grid-2"><div><div class="muted">Proyecto</div><b id="offerProject">-</b></div><div><div class="muted">Cliente</div><b id="offerClient">-</b></div></div>
+    <div class="table-wrap" style="margin-top:18px"><table><thead><tr><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>Precio unitario</th><th>Total</th></tr></thead><tbody id="offerBody"></tbody></table></div>
+    <div class="right" style="margin-top:18px"><div class="muted">TOTAL OFERTA</div><div id="offerTotal" class="total">$0.00</div></div>
+  </div>
+</section>
+</main>
+
+<dialog id="compareDialog"><div class="modal-head"><b id="compareTitle">Comparar proveedores</b><button class="x" onclick="compareDialog.close()">×</button></div><div class="modal-body"><div id="compareBody"></div></div></dialog>
+
+<script>
+const seed={products:[
+{id:'REG-001',name:'Tubería PEAD 110 mm PN10',category:'Tuberías',unit:'m',spec:'Ø110 / PN10',aliases:['HDPE PIPE 110MM PN10','PE100 PIPE D110 PN10']},
+{id:'REG-002',name:'Válvula bola PVC 2"',category:'Válvulas',unit:'ud',spec:'2" / PVC',aliases:['BALL VALVE PVC 63 MM','PVC BALL VALVE 2 INCH']},
+{id:'REG-003',name:'Filtro de anillas 3"',category:'Filtración',unit:'ud',spec:'3" / anillas',aliases:['DISC FILTER 3" 120 MESH']},
+{id:'REG-004',name:'Aspersor Rain Bird LFX600',category:'Aspersión',unit:'ud',spec:'LFX600',aliases:['RAIN BIRD LFX600']}
+],prices:[
+{id:1,date:'2026-08-01',quote:'Q-001',supplier:'Proveedor A',desc:'HDPE PIPE 110MM PN10',productId:'REG-001',qty:1000,total:4250,currency:'USD'},
+{id:2,date:'2026-08-02',quote:'Q-002',supplier:'Proveedor B',desc:'PE100 PIPE D110 PN10',productId:'REG-001',qty:2000,total:8200,currency:'USD'},
+{id:3,date:'2026-08-03',quote:'Q-003',supplier:'Proveedor C',desc:'BALL VALVE PVC 63 MM',productId:'REG-002',qty:25,total:445,currency:'USD'},
+{id:4,date:'2026-08-04',quote:'Q-004',supplier:'Proveedor A',desc:'PVC BALL VALVE 2 INCH',productId:'REG-002',qty:30,total:555,currency:'USD'},
+{id:5,date:'2026-08-05',quote:'Q-005',supplier:'Proveedor B',desc:'DISC FILTER 3" 120 MESH',productId:'REG-003',qty:2,total:630,currency:'USD'}
+],project:[],stage:[]};
+let state=JSON.parse(localStorage.getItem('regantisProcurementV02')||'null')||seed;
+const $=id=>document.getElementById(id); const save=()=>{localStorage.setItem('regantisProcurementV02',JSON.stringify(state));renderAll()};
+const money=(n,c='USD')=>new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(Number(n||0));
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function product(id){return state.products.find(p=>p.id===id)}
+function productPrices(productId){return state.prices.filter(x=>x.productId===productId&&x.qty>0).map(x=>({...x,unit:x.total/x.qty})).sort((a,b)=>a.unit-b.unit)}
+function bestPrice(productId){return productPrices(productId)[0]||null}
+function showView(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===id));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===id));renderAll()}
+function openProductForm(){pName.value=pCategory.value=pSpec.value='';$('productForm').style.display='block'} function closeProductForm(){$('productForm').style.display='none'}
+function saveProduct(){const name=pName.value.trim();if(!name)return alert('Indica el nombre Regantis');const id='REG-'+String(Math.max(0,...state.products.map(p=>Number(p.id.split('-')[1])||0))+1).padStart(3,'0');state.products.push({id,name,category:pCategory.value,unit:pUnit.value,spec:pSpec.value,aliases:[]});closeProductForm();save();return id}
+function createProductFromStage(index){const r=state.stage[index];pName.value=r.desc;pCategory.value='';pSpec.value='';$('productForm').style.display='block';showView('catalog');alert('Completa el nombre Regantis. Luego vuelve a Importar cotización y selecciona el nuevo producto.');}
+function deleteProduct(id){if(confirm('Eliminar producto?')){state.products=state.products.filter(p=>p.id!==id);save()}}
+function deletePrice(id){state.prices=state.prices.filter(x=>x.id!==id);save()}
+
+function previewImportFile(event){const f=event.target.files[0],box=$('filePreview');if(!f){box.innerHTML='<span class="muted">Sin archivo seleccionado</span>';return} const url=URL.createObjectURL(f);if(f.type.startsWith('image/')) box.innerHTML=`<img src="${url}" alt="Cotización">`;else if(f.type==='application/pdf') box.innerHTML=`<iframe src="${url}"></iframe>`;else {box.innerHTML=`<div><b>${esc(f.name)}</b><br><span class="muted">Archivo cargado</span></div>`;if(f.type.startsWith('text/')||f.name.endsWith('.csv')){const rd=new FileReader();rd.onload=()=>{rawQuoteText.value=rd.result};rd.readAsText(f)}}}
+function parseNumber(s){if(s===undefined||s===null)return 0;let t=String(s).trim().replace(/[$€\s]/g,'');if(t.includes(',')&&t.includes('.')){if(t.lastIndexOf(',')>t.lastIndexOf('.'))t=t.replace(/\./g,'').replace(',','.');else t=t.replace(/,/g,'')}else if(t.includes(',')) t=t.replace(',','.');return Number(t.replace(/[^0-9.-]/g,''))||0}
+function parseRawText(){const text=rawQuoteText.value.trim();if(!text)return alert('Pega algunos renglones de la cotización');const lines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);let found=[];for(const line of lines){let parts=line.split(/\t|\s*;\s*|\s*\|\s*/).map(x=>x.trim()).filter(Boolean);if(parts.length>=3){let nums=[];for(let i=parts.length-1;i>=0;i--){const n=parseNumber(parts[i]);if(n>0){nums.unshift({i,n});if(nums.length===2)break}}if(nums.length>=2){const qty=nums[0].n,total=nums[1].n;const desc=parts.slice(0,nums[0].i).join(' ').trim()||parts[0];found.push({id:Date.now()+Math.random(),desc,qty,total,productId:suggestProduct(desc)})}}}
+ if(!found.length){alert('No pude separar cantidad y total. Usa formato: Descripción | Cantidad | Total línea, o agrega renglones manuales.');return}
+ state.stage=found;renderStage();}
+function suggestProduct(desc){const d=desc.toLowerCase();let best=null,score=0;for(const p of state.products){for(const candidate of [p.name,...(p.aliases||[])]){const tokens=candidate.toLowerCase().split(/[^a-z0-9]+/).filter(x=>x.length>2);const s=tokens.filter(t=>d.includes(t)).length/(tokens.length||1);if(s>score){score=s;best=p.id}}}return score>=.35?best:''}
+function addStageRow(){state.stage.push({id:Date.now()+Math.random(),desc:'',qty:1,total:0,productId:''});renderStage()}
+function clearStage(){state.stage=[];renderStage()}
+function updateStage(i,key,val){state.stage[i][key]=key==='qty'||key==='total'?parseNumber(val):val;renderStage()}
+function removeStage(i){state.stage.splice(i,1);renderStage()}
+function renderStage(){const opts='<option value="">— Asociar —</option>'+state.products.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');stageBody.innerHTML=state.stage.length?state.stage.map((r,i)=>`<tr><td><input class="desc" value="${esc(r.desc)}" oninput="state.stage[${i}].desc=this.value"></td><td><input type="number" step="any" value="${r.qty||''}" oninput="state.stage[${i}].qty=parseNumber(this.value);document.getElementById('unit${i}').textContent=money((state.stage[${i}].total||0)/(state.stage[${i}].qty||1),iCurrency.value)"></td><td><input type="number" step="any" value="${r.total||''}" oninput="state.stage[${i}].total=parseNumber(this.value);document.getElementById('unit${i}').textContent=money((state.stage[${i}].total||0)/(state.stage[${i}].qty||1),iCurrency.value)"></td><td id="unit${i}"><b>${money((r.total||0)/(r.qty||1),iCurrency.value)}</b></td><td><select onchange="state.stage[${i}].productId=this.value"><option value="">— Asociar —</option>${state.products.map(p=>`<option value="${p.id}" ${r.productId===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select><div style="margin-top:5px"><button class="btn small" onclick="createProductFromStage(${i})">+ Crear producto</button></div></td><td><button class="btn danger small" onclick="removeStage(${i})">Eliminar</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Todavía no hay renglones para revisar.</td></tr>'}
+function saveStageRows(){if(!iSupplier.value.trim())return alert('Indica el proveedor');if(!state.stage.length)return alert('No hay renglones');const pending=state.stage.filter(r=>!r.productId||!r.qty||!r.total);if(pending.length)return alert('Cada renglón debe tener producto Regantis, cantidad y total de línea.');const date=iDate.value||new Date().toISOString().slice(0,10);for(const r of state.stage){state.prices.push({id:Date.now()+Math.random(),date,quote:iQuote.value,supplier:iSupplier.value.trim(),desc:r.desc,productId:r.productId,qty:Number(r.qty),total:Number(r.total),currency:iCurrency.value});const p=product(r.productId);if(r.desc&&!p.aliases.includes(r.desc))p.aliases.push(r.desc)} state.stage=[];rawQuoteText.value='';save();renderStage();showView('quotes');}
+
+function addProjectItem(){const pid=projectProduct.value,qty=Number(projectQty.value),margin=Number(projectMargin.value)/100;if(!pid||qty<=0)return;const b=bestPrice(pid);state.project.push({id:Date.now(),productId:pid,qty,margin,priceId:b?.id||null});save()}
+function deleteProjectItem(id){state.project=state.project.filter(x=>x.id!==id);save()}
+function clearProject(){if(confirm('Vaciar proyecto?')){state.project=[];save()}}
+function chosenPrice(item){const options=productPrices(item.productId);return options.find(x=>String(x.id)===String(item.priceId))||options[0]||null}
+function calcProjectItem(i){const p=product(i.productId),b=chosenPrice(i);const cost=b?b.unit:0;const sell=cost&&i.margin<1?cost/(1-i.margin):0;return {...i,p,b,cost,sell,costTotal:cost*i.qty,sellTotal:sell*i.qty,options:productPrices(i.productId)}}
+function setProjectPrice(itemId,priceId){const i=state.project.find(x=>x.id===itemId);if(i){i.priceId=priceId;save();compareDialog.close()}}
+function compareProduct(itemId){const item=state.project.find(x=>x.id===itemId);if(!item)return;const p=product(item.productId),opts=productPrices(item.productId);compareTitle.textContent=`Proveedores — ${p?.name||''}`;if(!opts.length)compareBody.innerHTML='<div class="empty">No hay precios registrados.</div>';else compareBody.innerHTML=`<div class="grid grid-3">${opts.map((x,idx)=>`<div class="${idx===0?'best-card':'card'}"><div class="pill-row"><span class="badge ${idx===0?'green':'gray'}">${idx===0?'MEJOR PRECIO':'ALTERNATIVA'}</span>${String(item.priceId)===String(x.id)?'<span class="badge">ELEGIDO</span>':''}</div><h3 style="margin-bottom:6px">${esc(x.supplier)}</h3><div class="metric">Precio unitario<b>${money(x.unit,x.currency)}</b></div><div class="subtle">${esc(x.date)} · ${esc(x.quote||'Sin N°')}</div><div class="subtle" style="margin-top:6px">${esc(x.desc)}</div><button class="btn primary" style="margin-top:12px" onclick="setProjectPrice(${item.id},'${x.id}')">Usar este proveedor</button></div>`).join('')}</div>`;compareDialog.showModal()}
+function exportOfferCSV(){const rows=[['Producto','Cantidad','Unidad','Precio unitario','Total']];state.project.map(calcProjectItem).forEach(x=>rows.push([x.p?.name||'',x.qty,x.p?.unit||'',x.sell.toFixed(2),x.sellTotal.toFixed(2)]));const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Oferta_Regantis.csv';a.click()}
+function exportBackup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='Regantis_Procurement_Backup.json';a.click()}
+function importBackup(event){const f=event.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.products||!x.prices)throw 0;state=x;state.project=state.project||[];state.stage=[];save();alert('Respaldo importado correctamente.')}catch{alert('Archivo de respaldo no válido.')}};r.readAsText(f)}
+
+function renderAll(){
+ kpiProducts.textContent=state.products.length;kpiSuppliers.textContent=new Set(state.prices.map(x=>x.supplier)).size;kpiPrices.textContent=state.prices.length;kpiProject.textContent=state.project.length;
+ catalogBody.innerHTML=state.products.map(p=>{const ps=productPrices(p.id);return `<tr><td><b>${esc(p.name)}</b><br><span class="muted">${p.id}</span></td><td>${esc(p.category||'')}</td><td>${esc(p.spec||'')}</td><td>${esc(p.unit)}</td><td><div class="pill-row">${(p.aliases||[]).map(a=>`<span class="badge gray">${esc(a)}</span>`).join(' ')||'<span class="muted">Sin alias</span>'}</div></td><td>${ps.length?`<span class="price-best">${money(ps[0].unit,ps[0].currency)}</span><br><span class="subtle">${esc(ps[0].supplier)} · ${ps.length} opción(es)</span>`:'<span class="muted">Sin precio</span>'}</td><td><button class="btn danger small" onclick="deleteProduct('${p.id}')">Eliminar</button></td></tr>`}).join('');
+ const opts=state.products.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');qProduct?.remove?.();projectProduct.innerHTML=opts;
+ pricesBody.innerHTML=state.prices.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(x=>{const p=product(x.productId);return `<tr><td>${esc(x.date)}</td><td><b>${esc(x.supplier)}</b></td><td>${esc(x.desc||'')}</td><td>${esc(p?.name||'')}</td><td>${x.qty} ${esc(p?.unit||'')}</td><td>${money(x.total/x.qty,x.currency)}</td><td>${esc(x.currency)}</td><td>${esc(x.quote||'')}</td><td><button class="btn danger small" onclick="deletePrice('${x.id}')">Eliminar</button></td></tr>`}).join('');
+ projectBody.innerHTML=state.project.length?state.project.map(calcProjectItem).map(x=>`<tr><td><b>${esc(x.p?.name||'')}</b><br><span class="subtle">${esc(x.p?.unit||'')}</span></td><td>${x.qty}</td><td>${x.b?`<span class="badge green">${esc(x.b.supplier)}</span><br><span class="subtle">${esc(x.b.date)}</span>`:'<span class="muted">Sin precio</span>'}</td><td class="price-best">${money(x.cost,x.b?.currency||'USD')}</td><td>${x.options.length>1?`<button class="btn small" onclick="compareProduct(${x.id})">Ver ${x.options.length} precios</button>`:x.options.length===1?'<span class="muted">1 precio</span>':'—'}</td><td>${money(x.costTotal)}</td><td>${(x.margin*100).toFixed(0)}%</td><td>${money(x.sell)}</td><td><b>${money(x.sellTotal)}</b></td><td><button class="btn danger small" onclick="deleteProjectItem(${x.id})">×</button></td></tr>`).join(''):'<tr><td colspan="10" class="empty">Agrega productos para comenzar el proyecto.</td></tr>';
+ offerProject.textContent=projectName.value||'Nuevo proyecto';offerClient.textContent=projectClient.value||'-';const rows=state.project.map(calcProjectItem);offerBody.innerHTML=rows.map(x=>`<tr><td>${esc(x.p?.name||'')}</td><td>${x.qty}</td><td>${esc(x.p?.unit||'')}</td><td>${money(x.sell)}</td><td><b>${money(x.sellTotal)}</b></td></tr>`).join('');offerTotal.textContent=money(rows.reduce((s,x)=>s+x.sellTotal,0));renderStage();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
+projectName.addEventListener('input',renderAll);projectClient.addEventListener('input',renderAll);iDate.value=new Date().toISOString().slice(0,10);renderAll();
+</script>
+</body>
+</html>
